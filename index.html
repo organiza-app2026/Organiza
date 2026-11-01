@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Organiza</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;color:white;background:linear-gradient(160deg,#07152f,#124c9a,#65baff);min-height:100vh}
+header{text-align:center;padding:28px 15px 15px}
+header h1{font-size:36px;margin:0}
+header p{margin:8px 0;color:#d7eaff}
+main{max-width:650px;margin:auto;padding:12px 16px 95px}
+.panel{background:#ffffff18;border:1px solid #ffffff30;border-radius:20px;padding:18px;margin-bottom:15px;backdrop-filter:blur(8px)}
+h2{margin:0 0 12px}
+button,input,textarea,select{font:inherit;border:0;border-radius:12px;padding:12px}
+button{background:#a8dcff;color:#08254b;font-weight:bold;cursor:pointer}
+input,textarea,select{width:100%;margin:5px 0 10px;background:#f3f8ff;color:#14223b}
+.nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;background:#07152ff2;padding:10px 3px}
+.nav button{font-size:12px;padding:10px 8px;background:transparent;color:white}
+.nav button.active{background:#347ee5;border-radius:12px}
+.task{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #ffffff30}
+.task input{width:auto;margin:0}
+.task span{flex:1}
+.small{opacity:.8;font-size:13px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<header>
+<h1>🌌 Organiza</h1>
+<p>Organise ta vie, atteins tes objectifs !</p>
+</header>
+<main>
+<section id="accueil" class="page">
+<div class="panel">
+<h2>👋 Bienvenue !</h2>
+<p>Prêt à organiser ta journée ?</p>
+<p id="date"></p>
+</div>
+<div class="panel">
+<h2>✅ Mes tâches</h2>
+<input id="taskInput" placeholder="Ajouter une tâche...">
+<button onclick="addTask()">＋ Ajouter</button>
+<div id="tasks"></div>
+</div>
+<div class="panel">
+<h2>📅 Mon planning</h2>
+<textarea id="planning" rows="3" placeholder="Note tes activités de la journée..."></textarea>
+<button onclick="savePlanning()">Enregistrer</button>
+</div>
+</section>
+<section id="fiches" class="page hidden">
+<div class="panel">
+<h2>📝 Mes fiches</h2>
+<input id="ficheTitle" placeholder="Titre de la fiche">
+<textarea id="ficheText" rows="4" placeholder="Écris tes idées ou tes devoirs..."></textarea>
+<button onclick="addFiche()">Créer une fiche</button>
+<div id="fichesList"></div>
+</div>
+</section>
+<section id="reveil" class="page hidden">
+<div class="panel">
+<h2>⏰ Mon réveil</h2>
+<label>Heure du réveil</label>
+<input id="alarmTime" type="time" value="07:00">
+<label>Sonnerie</label>
+<select id="alarmSound"><option value="classic">Classique</option><option value="gentle">Douce</option><option value="beep">Bip</option></select>
+<button onclick="setAlarm()">Enregistrer le réveil</button>
+<p id="alarmStatus">Aucun réveil programmé.</p>
+<p class="small">Le réveil fonctionne uniquement lorsque cette page reste ouverte.</p>
+</div>
+</section>
+<section id="profil" class="page hidden">
+<div class="panel">
+<h2>👤 Mon profil</h2>
+<input id="username" placeholder="Ton pseudo">
+<button onclick="saveProfile()">Enregistrer le profil</button>
+<p id="profileStatus"></p>
+</div>
+</section>
+<section id="parametres" class="page hidden">
+<div class="panel">
+<h2>⚙️ Paramètres</h2>
+<label>Couleur du fond</label>
+<select onchange="changeTheme(this.value)"><option value="blue">Bleu</option><option value="purple">Violet</option><option value="green">Vert</option></select>
+<p>Les tâches et fiches sont conservées sur cet appareil.</p>
+</div>
+</section>
+<section id="premium" class="page hidden">
+<div class="panel">
+<h2>💎 Organiza Premium</h2>
+<h3>4,50 € / mois</h3>
+<p>Découvre ton planificateur intelligent pour mieux organiser tes tâches.</p>
+<button onclick="premiumPlan()">✨ Organiser ma journée</button>
+<div id="premiumResult"></div>
+<p class="small">Démo locale : aucun paiement n'est effectué.</p>
+</div>
+</section>
+</main>
+<nav class="nav">
+<button class="active" onclick="showPage('accueil',this)">🏠 Accueil</button>
+<button onclick="showPage('fiches',this)">📝 Fiches</button>
+<button onclick="showPage('reveil',this)">⏰ Réveil</button>
+<button onclick="showPage('profil',this)">👤 Profil</button>
+<button onclick="showPage('premium',this)">💎 Premium</button>
+<button onclick="showPage('parametres',this)">⚙️</button>
+</nav>
+<script>
+const $=id=>document.getElementById(id);
+$('date').textContent=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+let tasks=JSON.parse(localStorage.getItem('orgTasks')||'[]');
+let fiches=JSON.parse(localStorage.getItem('orgFiches')||'[]');
+function showPage(id,btn){document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));$(id).classList.remove('hidden');document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}
+function renderTasks(){$('tasks').innerHTML='';tasks.forEach((t,i)=>{let row=document.createElement('div');row.className='task';let cb=document.createElement('input');cb.type='checkbox';cb.checked=t.done;cb.onchange=()=>{tasks[i].done=cb.checked;saveTasks()};let sp=document.createElement('span');sp.textContent=t.text;sp.style.textDecoration=t.done?'line-through':'none';let del=document.createElement('button');del.textContent='✕';del.onclick=()=>{tasks.splice(i,1);saveTasks()};row.append(cb,sp,del);$('tasks').append(row)})}
+function saveTasks(){localStorage.setItem('orgTasks',JSON.stringify(tasks));renderTasks()}
+function addTask(){let v=$('taskInput').value.trim();if(!v)return;tasks.push({text:v,done:false});$('taskInput').value='';saveTasks()}
+function savePlanning(){localStorage.setItem('orgPlanning',$('planning').value);alert('Planning enregistré !')}
+$('planning').value=localStorage.getItem('orgPlanning')||'';
+function renderFiches(){$('fichesList').innerHTML='';fiches.forEach((f,i)=>{let d=document.createElement('div');d.className='panel';let h=document.createElement('h3');h.textContent=f.title;let p=document.createElement('p');p.textContent=f.text;let b=document.createElement('button');b.textContent='Supprimer';b.onclick=()=>{fiches.splice(i,1);localStorage.setItem('orgFiches',JSON.stringify(fiches));renderFiches()};d.append(h,p,b);$('fichesList').append(d)})}
+function addFiche(){let title=$('ficheTitle').value.trim(),text=$('ficheText').value.trim();if(!title||!text){alert('Ajoute un titre et un texte.');return}fiches.push({title,text});localStorage.setItem('orgFiches',JSON.stringify(fiches));$('ficheTitle').value='';$('ficheText').value='';renderFiches()}
+function saveProfile(){localStorage.setItem('orgName',$('username').value);$('profileStatus').textContent='Profil enregistré !'}
+$('username').value=localStorage.getItem('orgName')||'';
+function changeTheme(v){let bg={blue:'linear-gradient(160deg,#07152f,#124c9a,#65baff)',purple:'linear-gradient(160deg,#190b38,#6535a5,#d5a8ff)',green:'linear-gradient(160deg,#062d2b,#16846d,#9ae6b4)'};document.body.style.background=bg[v]}
+function premiumPlan(){let pending=tasks.filter(t=>!t.done);$('premiumResult').textContent=pending.length?'Commence par : '+pending[0].text+'. Puis avance sur les autres tâches une par une.':'Ajoute tes tâches dans Accueil pour obtenir un plan personnalisé.'}
+function setAlarm(){$('alarmStatus').textContent='Réveil réglé pour '+$('alarmTime').value+' ('+$('alarmSound').selectedOptions[0].text+'). Garde cette page ouverte.'}
+renderTasks();renderFiches();
+</script>
+</body>
+</html>
