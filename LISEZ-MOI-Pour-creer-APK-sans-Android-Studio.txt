@@ -1,0 +1,25 @@
+ORGANIZA — OBTENIR UN APK SANS INSTALLER ANDROID STUDIO
+
+J'ai préparé ce projet pour que GitHub le compile sur ses propres ordinateurs en ligne.
+Tu n'as pas besoin d'installer Android Studio, mais tu dois avoir un compte GitHub et envoyer le dossier du projet sur GitHub.
+
+ÉTAPES SIMPLES
+1. Va sur https://github.com et connecte-toi ou crée un compte.
+2. Crée un nouveau dépôt (New repository), par exemple nommé Organiza.
+   Pour une première tentative, tu peux le mettre Private.
+3. Décompresse ce ZIP sur ton ordinateur.
+4. Dans le dépôt GitHub, utilise Add file > Upload files et dépose TOUS les fichiers et dossiers du projet décompressé, y compris le dossier caché .github.
+   IMPORTANT : téléverse le CONTENU du dossier, pas le fichier ZIP lui-même.
+5. Clique sur Commit changes.
+6. Ouvre l'onglet Actions du dépôt. Choisis "Build Organiza APK", puis clique sur Run workflow.
+7. Attends que le travail soit terminé avec une coche verte.
+8. Ouvre l'exécution terminée, trouve Artifacts, puis télécharge "Organiza-debug-APK".
+9. Décompresse l'artefact : il contient app-debug.apk.
+
+À SAVOIR
+- Le fichier généré est un APK de test (debug), non signé pour une publication officielle de magasin.
+- Pour partager l'APK, teste-le d'abord sur un appareil Android.
+- Il ne publie pas l'application sur Google Play.
+- Organiza reste un prototype local : pas de vraie IA connectée, pas de paiements Premium.
+- GitHub Actions a des limites d'utilisation ; pour un dépôt privé, vérifie les limites actuelles du compte.
+- Ne partage pas de mot de passe, de code de connexion ou de clé privée.
